@@ -82,10 +82,9 @@ local function show_barriers(nodes, player)
 	end
 end
 
-
 local function cyclic_update()
 	for _, player in ipairs(minetest.get_connected_players()) do
-		local wielded_item = player:get_wielded_item():get_name()
+        local wielded_item = player:get_wielded_item():get_name()
         if wielded_item == "barrier:barrier_item" then
             local pos = player:get_pos()
             local radius = 10
