@@ -1,4 +1,4 @@
-minetest.register_node("barrier:barrier", {
+core.register_node("barrier:barrier", {
     description = "Barrier",
     drawtype = "airlike",
     tiles = {""},
@@ -29,7 +29,7 @@ minetest.register_node("barrier:barrier", {
     on_blast = function() end
 })
 
-minetest.register_tool("barrier:barrier_item", {
+core.register_tool("barrier:barrier_item", {
     description = "Barrier",
     inventory_image = "barrier_barrier.png",
     liquids_pointable = true,
@@ -56,13 +56,13 @@ minetest.register_tool("barrier:barrier_item", {
             return itemstack
         end
         local pos = pointed_thing.above
-        local node = minetest.get_node(pos)
+        local node = core.get_node(pos)
         -- if the node is not air, return the itemstack
         if node.name ~= "air" then
             return itemstack
         end
-        minetest.set_node(pos, {name = "barrier:barrier"})
-        minetest.add_particle({
+        core.set_node(pos, {name = "barrier:barrier"})
+        core.add_particle({
             pos = pos,
             velocity = {x = 0, y = 0, z = 0},
             acceleration = {x = 0, y = 0, z = 0},
@@ -81,7 +81,7 @@ minetest.register_tool("barrier:barrier_item", {
 local function show_barriers(nodes, player)
     if not nodes or #nodes == 0 then return end
     for n = 1, #nodes do
-        minetest.add_particle({
+        core.add_particle({
             pos = nodes[n],
             velocity = {x = 0, y = 0, z = 0},
             acceleration = {x = 0, y = 0, z = 0},
@@ -97,12 +97,12 @@ local function show_barriers(nodes, player)
 end
 
 local function cyclic_update()
-	for _, player in ipairs(minetest.get_connected_players()) do
+	for _, player in ipairs(core.get_connected_players()) do
         local wielded_item = player:get_wielded_item():get_name()
         if wielded_item == "barrier:barrier_item" then
             local pos = player:get_pos()
             local radius = 10
-            local nodes = minetest.find_nodes_in_area(
+            local nodes = core.find_nodes_in_area(
                 {x = pos.x - radius, y = pos.y - radius, z = pos.z - radius},
                 {x = pos.x + radius, y = pos.y + radius, z = pos.z + radius},
                 {"barrier:barrier"}
@@ -110,9 +110,9 @@ local function cyclic_update()
             show_barriers(nodes, player)
         end
 	end
-	minetest.after(1, cyclic_update)
+	core.after(1, cyclic_update)
 end
 
-minetest.after(1, cyclic_update)
+core.after(1, cyclic_update)
 
 
