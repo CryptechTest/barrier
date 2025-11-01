@@ -78,21 +78,38 @@ core.register_tool("barrier:barrier_item", {
     end,
 })
 
+local function is_outermost_barrier(pos)
+    local offsets = {
+        {x=1, y=0, z=0}, {x=-1, y=0, z=0},
+        {x=0, y=1, z=0}, {x=0, y=-1, z=0},
+        {x=0, y=0, z=1}, {x=0, y=0, z=-1},
+    }
+    for _, off in ipairs(offsets) do
+        local adj = {x=pos.x+off.x, y=pos.y+off.y, z=pos.z+off.z}
+        if core.get_node(adj).name ~= "barrier:barrier" then
+            return true
+        end
+    end
+    return false
+end
+
 local function show_barriers(nodes, player)
     if not nodes or #nodes == 0 then return end
     for n = 1, #nodes do
-        core.add_particle({
-            pos = nodes[n],
-            velocity = {x = 0, y = 0, z = 0},
-            acceleration = {x = 0, y = 0, z = 0},
-            expirationtime = 1.05,
-            size = 8,
-            collisiondetection = false,
-            vertical = false,
-            texture = "barrier_barrier.png",
-            glow = 5,
-            playername = player:get_player_name()
-        })
+        if is_outermost_barrier(nodes[n]) then
+            core.add_particle({
+                pos = nodes[n],
+                velocity = {x = 0, y = 0, z = 0},
+                acceleration = {x = 0, y = 0, z = 0},
+                expirationtime = 1.15,
+                size = 8,
+                collisiondetection = false,
+                vertical = false,
+                texture = "barrier_barrier.png",
+                glow = 5,
+                playername = player:get_player_name()
+            })
+        end
     end
 end
 
@@ -101,7 +118,7 @@ local function cyclic_update()
         local wielded_item = player:get_wielded_item():get_name()
         if wielded_item == "barrier:barrier_item" then
             local pos = player:get_pos()
-            local radius = 10
+            local radius = 32
             local nodes = core.find_nodes_in_area(
                 {x = pos.x - radius, y = pos.y - radius, z = pos.z - radius},
                 {x = pos.x + radius, y = pos.y + radius, z = pos.z + radius},
